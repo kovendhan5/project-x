@@ -7,7 +7,7 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         <IconButton color="inherit" edge="start">
-          <EcoIcon />
+          <EcoIcon/>
         </IconButton>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           EcoTrack
