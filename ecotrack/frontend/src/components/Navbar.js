@@ -1,4 +1,4 @@
-import EcoIcon from '@mui/icons-material/Eco';
+import EcoIcon from '@mui/icons-material/Eco'; // Correct import
 import { AppBar, Button, IconButton, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 
@@ -7,7 +7,7 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         <IconButton color="inherit" edge="start">
-          <EcoIcon/>
+          <EcoIcon /> {/* Correct usage */}
         </IconButton>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           EcoTrack
