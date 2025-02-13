@@ -1,79 +1,80 @@
-import { Box, Button, Paper, Tab, Tabs, TextField } from '@mui/material';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-import React, { useState } from 'react';
+import { Box, Button, Container, Fade, Paper, Typography } from '@mui/material';
+import { useAuth0 } from '@auth0/auth0-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
-  const [tabValue, setTabValue] = useState(0);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const endpoint = tabValue === 0 ? '/api/auth/login' : '/api/auth/register';
-    try {
-      const response = await axios.post(endpoint, { email, password, username });
-      localStorage.setItem('token', response.data.token);
+  React.useEffect(() => {
+    if (isAuthenticated) {
       navigate('/dashboard');
-    } catch (error) {
-      console.error('Authentication error:', error);
     }
-  };
+  }, [isAuthenticated, navigate]);
+
+  if (isLoading) {
+    return (
+      <Container component="main" maxWidth="xs">
+        <Box sx={{ mt: 8, display: 'flex', justifyContent: 'center' }}>
+          <Typography>Loading...</Typography>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Paper sx={{ p: 3, width: 400 }}>
-          <Tabs value={tabValue} onChange={handleTabChange} centered>
-            <Tab label="Login" />
-            <Tab label="Sign Up" />
-          </Tabs>
-          <form onSubmit={handleSubmit}>
-            {tabValue === 1 && (
-              <TextField
-                label="Username"
-                fullWidth
-                margin="normal"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            )}
-            <TextField
-              label="Email"
+    <Container component="main" maxWidth="xs">
+      <Fade in={true}>
+        <Box
+          sx={{
+            mt: 8,
+            mb: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography component="h1" variant="h4" sx={{ mb: 4, fontWeight: 600 }}>
+            Welcome to EcoTrack
+          </Typography>
+
+          <Paper 
+            elevation={3}
+            sx={{ 
+              width: '100%',
+              p: 4,
+              borderRadius: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 3 }}>
+              Join our eco-conscious community
+            </Typography>
+            
+            <Button
+              onClick={() => loginWithRedirect()}
+              variant="contained"
               fullWidth
-              margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <TextField
-              label="Password"
-              type="password"
-              fullWidth
-              margin="normal"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-              {tabValue === 0 ? 'Login' : 'Sign Up'}
+              size="large"
+              sx={{ 
+                py: 1.5,
+                textTransform: 'none',
+                fontSize: '1.1rem',
+              }}
+            >
+              Sign In / Sign Up
             </Button>
-          </form>
-        </Paper>
-      </motion.div>
-    </Box>
+
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 3, textAlign: 'center' }}>
+              By continuing, you agree to our Terms of Service and Privacy Policy
+            </Typography>
+          </Paper>
+        </Box>
+      </Fade>
+    </Container>
   );
 };
 

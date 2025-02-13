@@ -1,0 +1,54 @@
+/* Import Leaflet CSS */
+@import '~leaflet/dist/leaflet.css';
+
+.leaflet-container {
+  width: 100%;
+  height: 400px;
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.leaflet-tile {
+  filter: saturate(0.8) brightness(1.1);
+}
+
+.custom-marker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  margin: 8px;
+  padding: 8px;
+}
+
+.leaflet-popup-content p {
+  margin: 0;
+}
+
+/* Fix for Leaflet default marker icon */
+.leaflet-default-icon-path {
+  background-image: url("https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png");
+}
+
+/* Custom styling for measurement cards */
+.measurement-card {
+  transition: transform 0.2s ease;
+}
+
+.measurement-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .leaflet-container {
+    height: 300px;
+  }
+}
