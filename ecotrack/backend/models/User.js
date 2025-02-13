@@ -1,26 +1,57 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  carbonFootprints: [{
-    electricity: Number,
-    commute: Number,
-    footprint: Number,
-    date: { type: Date, default: Date.now }
-  }],
-  badges: [String], // e.g., ["Eco Warrior", "Green Commuter"]
-  createdAt: { type: Date, default: Date.now }
+    auth0Id: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    username: {
+        type: String,
+        required: [true, 'Username is required'],
+        unique: true,
+        trim: true,
+        minlength: [3, 'Username must be at least 3 characters long']
+    },
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        unique: true,
+        lowercase: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    preferences: {
+        newsCategories: [{
+            type: String,
+            enum: ['environment', 'climate', 'energy', 'sustainability']
+        }],
+        notifications: {
+            email: { type: Boolean, default: false },
+            push: { type: Boolean, default: true }
+        }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    lastLogin: {
+        type: Date
+    }
+}, {
+    timestamps: true
 });
 
-// Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
-});
+// Update last login
+userSchema.methods.updateLastLogin = function() {
+    this.lastLogin = new Date();
+    return this.save();
+};
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;

@@ -1,31 +1,57 @@
+const { AppError } = require('../middleware/errorHandler');
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const logger = require('../utils/logger');
 
-// Register
-exports.register = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-    const user = new User({ username, email, password });
-    await user.save();
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.status(201).json({ token });
-  } catch (err) {
-    res.status(400).json({ error: 'Registration failed' });
-  }
+const updatePreferences = async (req, res, next) => {
+    try {
+        const { newsCategories, notifications } = req.body;
+        const userId = req.user._id;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { 
+                $set: { 
+                    'preferences.newsCategories': newsCategories,
+                    'preferences.notifications': notifications 
+                }
+            },
+            { new: true }
+        );
+
+        if (!user) {
+            throw new AppError('User not found', 404);
+        }
+
+        logger.info(`User preferences updated for: ${user.email}`);
+        res.json({
+            status: 'success',
+            data: { user }
+        });
+    } catch (error) {
+        logger.error('Preference update error:', error);
+        next(error);
+    }
 };
 
-// Login
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) throw new Error('Invalid credentials');
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new Error('Invalid credentials');
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.json({ token });
-  } catch (err) {
-    res.status(400).json({ error: 'Login failed' });
-  }
+const getProfile = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id);
+        
+        if (!user) {
+            throw new AppError('User not found', 404);
+        }
+
+        res.json({
+            status: 'success',
+            data: { user }
+        });
+    } catch (error) {
+        logger.error('Profile fetch error:', error);
+        next(error);
+    }
+};
+
+module.exports = {
+    updatePreferences,
+    getProfile
 };
