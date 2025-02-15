@@ -57,8 +57,11 @@ app.use(errorHandler);
 const connectDB = async () => {
     try {
         await mongoose.connect(config.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
+            // Removed deprecated options
+            ...config.MONGODB.OPTIONS,
+            // Add SSL/TLS options for local development
+            ssl: false,
+            directConnection: true
         });
         console.log('Connected to MongoDB');
     } catch (err) {

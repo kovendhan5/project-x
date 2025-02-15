@@ -1,7 +1,7 @@
 const express = require('express');
 const { query } = require('express-validator');
 const router = express.Router();
-const { verifyToken } = require('../middleware/auth');
+const { checkJwt, attachUser } = require('../middleware/auth');
 const validate = require('../middleware/validator');
 const { cacheMiddleware } = require('../middleware/cache');
 const { getAirQuality, getCityRankings } = require('../controllers/dataController');
@@ -37,7 +37,8 @@ const { getAirQuality, getCityRankings } = require('../controllers/dataControlle
  *         description: Location not found or no data available
  */
 router.get('/air-quality',
-    verifyToken,
+    checkJwt,
+    attachUser,
     validate([
         query('location').notEmpty().withMessage('Location is required'),
         query('radius').optional().isInt({ min: 1000, max: 100000 })
@@ -70,7 +71,8 @@ router.get('/air-quality',
  *         description: Number of cities to return (default 10)
  */
 router.get('/city-rankings',
-    verifyToken,
+    checkJwt,
+    attachUser,
     validate([
         query('parameter').optional().isIn(['pm25', 'pm10', 'no2', 'so2', 'o3', 'co']),
         query('limit').optional().isInt({ min: 5, max: 100 })

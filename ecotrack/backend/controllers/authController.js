@@ -44,6 +44,41 @@ const register = async (req, res, next) => {
     }
 };
 
+const login = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        // Check if user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new AppError('Invalid email or password', 401);
+        }
+
+        // Check password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            throw new AppError('Invalid email or password', 401);
+        }
+
+        // Generate JWT token
+        const token = jwt.sign({ id: user._id }, config.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                user: {
+                    username: user.username,
+                    email: user.email
+                },
+                token
+            }
+        });
+    } catch (error) {
+        logger.error('Login error:', error);
+        next(error);
+    }
+};
+
 const updatePreferences = async (req, res, next) => {
     try {
         const { newsCategories, notifications } = req.body;
@@ -95,6 +130,7 @@ const getProfile = async (req, res, next) => {
 
 module.exports = {
     register,
+    login,
     updatePreferences,
     getProfile
 };

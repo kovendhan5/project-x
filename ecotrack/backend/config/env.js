@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const config = {
-    MONGODB_URI: process.env.MONGODB_URI,
+    MONGODB_URI: process.env.MONGODB_URI || 'mongodb://mongodb:27017/ecotrack',
     NEWS_API_KEY: process.env.NEWS_API_KEY,
     OPENAQ_API_KEY: process.env.OPENAQ_API_KEY || 'development',
     PORT: process.env.PORT || 5000,
@@ -18,8 +18,6 @@ const config = {
     },
     MONGODB: {
         OPTIONS: {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000,
             maxPoolSize: 10
@@ -36,7 +34,7 @@ const config = {
 };
 
 // Only validate critical environment variables
-const requiredEnvVars = ['MONGODB_URI', 'AUTH0_DOMAIN', 'AUTH0_AUDIENCE'];
+const requiredEnvVars = ['AUTH0_DOMAIN', 'AUTH0_AUDIENCE'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {
