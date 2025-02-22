@@ -1,14 +1,14 @@
+import React from 'react';
 import { Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
-import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
-import HomePage from './pages/HomePage';
 import News from './pages/News';
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
 
 const theme = createTheme({
   palette: {
