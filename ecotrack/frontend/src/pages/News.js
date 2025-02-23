@@ -1,7 +1,6 @@
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import ShareIcon from '@mui/icons-material/Share';
 import { Box, Card, CardActions, CardContent, CardMedia, Chip, Container, Grid, IconButton, Skeleton, Typography, Zoom } from '@mui/material';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 const NewsCard = ({ article, index }) => {
@@ -113,17 +112,36 @@ const LoadingSkeleton = () => (
 const News = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('/api/news')
-      .then(response => {
-        setNews(response.data.articles);
+    const fetchNews = async () => {
+      try {
+        const response = await fetch('https://newsapi.org/v2/everything', {
+          headers: {
+            'X-API-KEY': process.env.REACT_APP_NEWS_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            q: 'environment',
+            category: 'environment',
+            pageSize: 10,
+          }
+        });
+        const data = await response.json();
+        if (data.articles) {
+          setNews(data.articles);
+        } else {
+          setError('No news articles found');
+        }
         setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching news:', error);
+      } catch (error) {
+        setError('Failed to fetch news. Please try again later.');
         setLoading(false);
-      });
+      }
+    };
+
+    fetchNews();
   }, []);
 
   return (
@@ -141,7 +159,11 @@ const News = () => {
       >
         Environmental News & Updates
       </Typography>
-
+      {error && (
+        <Typography variant="h6" color="error.main" sx={{ mb: 4, textAlign: 'center' }}>
+          {error}
+        </Typography>
+      )}
       <Grid container spacing={3}>
         {loading
           ? Array.from(new Array(6)).map((_, index) => (

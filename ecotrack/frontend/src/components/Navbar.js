@@ -1,14 +1,13 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import HomeIcon from '@mui/icons-material/Home';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import PersonIcon from '@mui/icons-material/Person';
-import { AppBar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Typography, useTheme } from '@mui/material';
-import { useAuth0 } from '@auth0/auth0-react';
+import { AppBar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
-  const theme = useTheme();
   const location = useLocation();
   const [mobileMenu, setMobileMenu] = useState(null);
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();

@@ -56,12 +56,11 @@ app.use(errorHandler);
 // Database connection with retry mechanism
 const connectDB = async () => {
     try {
-        await mongoose.connect(config.MONGODB_URI, {
-            // Removed deprecated options
-            ...config.MONGODB.OPTIONS,
-            // Add SSL/TLS options for local development
-            ssl: false,
-            directConnection: true
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecotrack', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false
         });
         console.log('Connected to MongoDB');
     } catch (err) {
